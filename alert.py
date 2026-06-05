@@ -34,9 +34,11 @@ def get_futures_symbols():
     )
 
     return [x["symbol"] for x in usdt_pairs[:50]]
+
 def stochastic_signal(symbol):
     try:
         url = f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=4h&limit=100"
+
         data = requests.get(url).json()
 
         df = pd.DataFrame(data)
@@ -51,30 +53,11 @@ def stochastic_signal(symbol):
         k = ((close - lowest) / (highest - lowest)) * 100
         d = k.rolling(3).mean()
 
-        if len(k.dropna()) < 5:
-            return
-
-        # Golden Cross <20
-        if (
-            k.iloc[-2] < d.iloc[-2]
-            and k.iloc[-1] > d.iloc[-1]
-            and k.iloc[-1] < 20
-        ):
-            send_telegram(
-                f"🚀 BUY ALERT\n\n{symbol}\n4H Stochastic Golden Cross <20\nK={k.iloc[-1]:.2f}\nD={d.iloc[-1]:.2f}"
-            )
-
-        # Death Cross >80
-        if (
-            k.iloc[-2] > d.iloc[-2]
-            and k.iloc[-1] < d.iloc[-1]
-            and k.iloc[-1] > 80
-        ):
-            send_telegram(
-                f"🔻 SELL ALERT\n\n{symbol}\n4H Stochastic Death Cross >80\nK={k.iloc[-1]:.2f}\nD={d.iloc[-1]:.2f}"
-            )
+        send_telegram(
+            f"TEST\n{symbol}\nK={k.iloc[-1]:.2f}\nD={d.iloc[-1]:.2f}"
+        )
 
     except Exception as e:
-        print(symbol, e)
+        send_telegram(f"ERROR {symbol}\n{str(e)}")
 
-send_telegram("✅ Bot berhasil berjalan dari GitHub Actions")
+stochastic_signal("HYPEUSDT")
