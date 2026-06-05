@@ -14,11 +14,17 @@ def send_telegram(message):
 
 def get_futures_symbols():
     url = "https://fapi.binance.com/fapi/v1/ticker/24hr"
-    data = requests.get(url).json()
+
+    r = requests.get(url)
+    print(r.status_code)
+    print(r.text[:500])
+
+    data = r.json()
 
     usdt_pairs = [
         x for x in data
-        if x["symbol"].endswith("USDT")
+        if isinstance(x, dict)
+        and x["symbol"].endswith("USDT")
         and float(x["quoteVolume"]) > 10000000
     ]
 
@@ -28,7 +34,6 @@ def get_futures_symbols():
     )
 
     return [x["symbol"] for x in usdt_pairs[:50]]
-
 def stochastic_signal(symbol):
     try:
         url = f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=4h&limit=100"
@@ -72,5 +77,4 @@ def stochastic_signal(symbol):
     except Exception as e:
         print(symbol, e)
 
-for symbol in get_futures_symbols():
-    stochastic_signal(symbol)
+send_telegram("✅ Bot berhasil berjalan dari GitHub Actions")
