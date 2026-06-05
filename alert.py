@@ -39,22 +39,10 @@ def stochastic_signal(symbol):
     try:
         url = f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=4h&limit=100"
 
-        data = requests.get(url).json()
-
-        df = pd.DataFrame(data)
-
-        high = df[2].astype(float)
-        low = df[3].astype(float)
-        close = df[4].astype(float)
-
-        lowest = low.rolling(14).min()
-        highest = high.rolling(14).max()
-
-        k = ((close - lowest) / (highest - lowest)) * 100
-        d = k.rolling(3).mean()
+        response = requests.get(url)
 
         send_telegram(
-            f"TEST\n{symbol}\nK={k.iloc[-1]:.2f}\nD={d.iloc[-1]:.2f}"
+            f"STATUS={response.status_code}\n{response.text[:300]}"
         )
 
     except Exception as e:
