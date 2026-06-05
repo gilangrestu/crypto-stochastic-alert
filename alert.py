@@ -43,17 +43,16 @@ def stochastic_signal(symbol):
             "category": "linear",
             "symbol": symbol,
             "interval": "240",
-            "limit": 100
+            "limit": 5
         }
 
         response = requests.get(url, params=params)
-        data = response.json()
 
         send_telegram(
-            f"STATUS={response.status_code}\n{str(data)[:500]}"
+            f"STATUS={response.status_code}\n\n{response.text[:1000]}"
         )
 
     except Exception as e:
-        send_telegram(f"ERROR {symbol}\n{str(e)}")
+        send_telegram(f"ERROR\n{str(e)}")
 
 stochastic_signal("HYPEUSDT")
