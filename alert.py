@@ -37,12 +37,20 @@ def get_futures_symbols():
 
 def stochastic_signal(symbol):
     try:
-        url = f"https://fapi.binance.com/fapi/v1/klines?symbol={symbol}&interval=4h&limit=100"
+        url = "https://api.bybit.com/v5/market/kline"
 
-        response = requests.get(url)
+        params = {
+            "category": "linear",
+            "symbol": symbol,
+            "interval": "240",
+            "limit": 100
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
 
         send_telegram(
-            f"STATUS={response.status_code}\n{response.text[:300]}"
+            f"STATUS={response.status_code}\n{str(data)[:500]}"
         )
 
     except Exception as e:
